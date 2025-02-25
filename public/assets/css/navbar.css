@@ -1,0 +1,25 @@
+.hover-line {
+    position: relative;
+
+}
+
+a.hover-line{
+    padding-left: 0;
+    padding-right: 0;
+    margin: 0 1.1em 0 1.1em;
+}
+
+.hover-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #fb923c; /* orange-500 */
+    transition: width 0.3s ease;
+}
+
+.hover-line:hover::after {
+    width: 100%;
+}
