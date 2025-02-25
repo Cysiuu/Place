@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{asset('/assets/css/navbar.css')}}">
+    <link href="{{asset('/assets/css/navbar.css')}}" rel="stylesheet">
     <style>
         .font-lato { font-family: 'Lato', sans-serif; }
     </style>
@@ -23,11 +23,11 @@
                     </div>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="{{ route('home') }}" class="{{ true ? 'text-orange-500 font-extrabold' : 'text-gray-700' }} hover-line font-lato rounded-md px-3 py-2 text-sm font-semibold hover:text-orange-400 transition-colors duration-200" aria-current="page">Home</a>
-                            <a href="{{ route('explore') }}" class="{{ false ? 'text-orange-500 font-extrabold' : 'text-gray-700' }} hover-line font-lato rounded-md px-3 py-2 text-sm font-semibold hover:text-orange-400 transition-colors duration-200">Explore</a>
-                            <a href="{{ route('collections') }}" class="{{ false ? 'text-orange-500 font-extrabold' : 'text-gray-700' }} hover-line font-lato rounded-md px-3 py-2 text-sm font-semibold hover:text-orange-400 transition-colors duration-200">Collections</a>
-                            <a href="{{ route('top-places') }}" class="{{ false ? 'text-orange-500 font-extrabold' : 'text-gray-700' }} hover-line font-lato rounded-md px-3 py-2 text-sm font-semibold hover:text-orange-400 transition-colors duration-200">Top places</a>
-                            <a href="{{ route('near-me') }}" class="{{ false ? 'text-orange-500 font-extrabold' : 'text-gray-700' }} hover-line font-lato rounded-md px-3 py-2 text-sm font-semibold hover:text-orange-400 transition-colors duration-200">Near me</a>
+                            <x-nav-link href="{{ route('home') }}" :active="request()->is('/')">Home</x-nav-link>
+                            <x-nav-link href="{{ route('explore') }}" :active="request()->is('explore')">Explore</x-nav-link>
+                            <x-nav-link href="{{ route('collections') }}" :active="request()->is('collections')">Collections</x-nav-link>
+                            <x-nav-link href="{{ route('top-places') }}" :active="request()->is('top-places')">Top places</x-nav-link>
+                            <x-nav-link href="{{ route('near-me') }}" :active="request()->is('near-me')">Near me</x-nav-link>
                         </div>
                     </div>
                 </div>
@@ -80,11 +80,11 @@
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="md:hidden" id="mobile-menu">
             <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-                <a href="{{ route('home') }}" class="{{ true ? 'bg-orange-500 text-white font-extrabold' : 'bg-transparent text-gray-700' }} font-lato block rounded-md px-3 py-2 text-base hover:bg-orange-400 hover:text-white transition-colors duration-200" aria-current="page">Home</a>
-                <a href="{{ route('explore') }}" class="{{ false ? 'bg-orange-500 text-white font-extrabold' : 'bg-transparent text-gray-700' }} font-lato block rounded-md px-3 py-2 text-base font-medium hover:bg-orange-400 hover:text-white transition-colors duration-200">Explore</a>
-                <a href="{{ route('collections') }}" class="{{ false ? 'bg-orange-500 text-white font-extrabold' : 'bg-transparent text-gray-700' }} font-lato block rounded-md px-3 py-2 text-base font-medium hover:bg-orange-400 hover:text-white transition-colors duration-200">Collections</a>
-                <a href="{{ route('top-places') }}" class="{{ false ? 'bg-orange-500 text-white font-extrabold' : 'bg-transparent text-gray-700' }} font-lato block rounded-md px-3 py-2 text-base font-medium hover:bg-orange-400 hover:text-white transition-colors duration-200">Top places</a>
-                <a href="{{ route('near-me') }}" class="{{ false ? 'bg-orange-500 text-white font-extrabold' : 'bg-transparent text-gray-700' }} font-lato block rounded-md px-3 py-2 text-base font-medium hover:bg-orange-400 hover:text-white transition-colors duration-200">Near me</a>
+                <x-nav-link-mobile href="{{ route('home') }}" :active="request()->is('/')">Home</x-nav-link-mobile>
+                <x-nav-link-mobile href="{{ route('explore') }}" :active="request()->is('explore')">Explore</x-nav-link-mobile>
+                <x-nav-link-mobile href="{{ route('collections') }}" :active="request()->is('collections')">Collections</x-nav-link-mobile>
+                <x-nav-link-mobile href="{{ route('top-places') }}" :active="request()->is('top-places')">Top places</x-nav-link-mobile>
+                <x-nav-link-mobile href="{{ route('near-me') }}" :active="request()->is('near-me')">Near me</x-nav-link-mobile>
             </div>
             <div class="border-t border-orange-200 pt-4 pb-3">
                 <div class="flex items-center px-5">

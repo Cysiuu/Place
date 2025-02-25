@@ -3,12 +3,6 @@
 
 }
 
-a.hover-line{
-    padding-left: 0;
-    padding-right: 0;
-    margin: 0 1.1em 0 1.1em;
-}
-
 .hover-line::after {
     content: '';
     position: absolute;
