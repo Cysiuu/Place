@@ -1,15 +1,13 @@
-FROM node:23
+FROM node:20
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 EXPOSE 5173
 
 CMD [ "npm", "run", "dev" ]
-
-
