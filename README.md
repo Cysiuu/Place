@@ -2,7 +2,7 @@
 
 Discover, mark, and share remarkable places around the world. Place is a platform where travelers and locals can share their favorite locations, from hidden gems to popular landmarks.
 
-## Docker Setup Guide for development
+## Docker Setup Guide for Development
 
 This guide will help you set up the application using Docker containers.
 
@@ -10,127 +10,111 @@ This guide will help you set up the application using Docker containers.
 
 - Docker and Docker Compose installed on your system
 - Git (to clone the repository)
+- Make (for simplified commands)
 
 ### Getting Started
 
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/krzysztofkozyra021/Place.git
    cd place
    ```
 
 2. **Create environment file**
 
-   Create a `docker.env` file in the root directory with the following variables:
-
-   ```
-   POSTGRES_DB=places_db
-   POSTGRES_USER=dbUser
-   POSTGRES_PASSWORD=changeme
-   POSTGRES_PORT=5432
-   ```
-
-3. **Start the containers**
-
-   ```bash
-   docker-compose --env-file docker.env up --build
-   ```
-
-   This will build and start three containers:
-    - `postgres-db`: PostgreSQL database
-    - `laravel-backend`: Laravel API backend
-    - `node-frontend`: Node.js frontend with Vite and Tailwind CSS
-
-4. **Setup the database**
-
-   If you encounter a "sessions" table error when accessing the Laravel backend, connect to the backend container and set up the database tables:
-
-   ```bash
-   # Connect to the container
-   docker exec -it laravel-backend bash
-
-   # Inside the container, run:
-   php artisan session:table
-   php artisan migrate
-   ```
-
-5. **Verify your Laravel .env configuration**
-
-   Make sure your Laravel `.env` file has the correct database configuration:
+   Create a `.env` file in the root directory with the following variables:
 
    ```
    DB_CONNECTION=pgsql
    DB_HOST=db
    DB_PORT=5432
-   DB_DATABASE=places_db
-   DB_USERNAME=dbUser
-   DB_PASSWORD=changeme
+   DB_DATABASE=<YOUR DB NAME>
+   DB_USERNAME=<YOUR DB USERNAME>
+   DB_PASSWORD=<YOUR DB PASSWORD>
+
+   POSTGRES_DB=<YOUR DB NAME>
+   POSTGRES_USER=<YOUR DB USERNAME>
+   POSTGRES_PASSWORD=<YOUR DB PASSWORD>
+   POSTGRES_PORT=5432 <YOUR DB PORT , DEFAULT IS 5432>
+
+   SESSION_DRIVER=database
+   ```
+
+3. **Initialize and start the application**
+
+   > **WARNING:** Before running `make init`, you may need to modify the Makefile to match your environment. Check that the database variables in Makefile match your configuration:
+   >
+   > ```makefile
+   > DATABASE_USERNAME=<YOUR DB USERNAME>
+   > TEST_DATABASE_NAME=<YOUR TEST DB NAME AS SPECIFIED IN .env>
+   > ```
+
+   Use the provided Makefile for simplified commands, thanks to [Blumilk](https://github.com/blumilksoftware/boilerplate) boilerplate:
+
+   ```bash
+   make init
+   ```
+
+   This command will:
+    - Build the Docker containers
+    - Start the containers
+    - Run initialization scripts
+    - Create the test database
+
+   Alternatively, you can run Docker Compose commands directly:
+
+   ```bash
+   docker-compose -f docker-compose.yaml build --pull
+   docker-compose -f docker-compose.yaml up -d
+   ```
+
+
+4. **Setup the database**
+
+   The migration will run during initialization, but if you encounter a "sessions" table error when accessing the application, you can manually run migrations:
+
+   ```bash
+   docker-compose -f docker-compose.yaml exec app php artisan migrate
    ```
 
 ### Accessing the Application
 
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8000
+- **Main Application**: http://localhost:8000
+- **Frontend Development Server**: http://localhost:5173 (when running npm dev)
 
-### Troubleshooting
+### Development Commands
 
-1. **Database Connection Issues**
+- **Start the application**: `make run`
+- **Stop the application**: `make stop`
+- **Run tests**: `make test`
+- **Create test db**: `make create-test-db`
 
-   If you experience database connection problems:
-
-   ```bash
-   docker exec -it laravel-backend bash
-   php artisan db:monitor
-   ```
+For more commands, check the Makefile.
 
 
-2. **Container Management**
+### Frontend Development
 
-   ```bash
-   # Stop all containers
-   docker-compose --env-file docker.env down
-   
-   # Run containers again
-   docker-compose --env-file docker.env up
-   
-   # Rebuild containers
-   docker-compose --env-file docker.env up --build
-   
-   # View running containers
-   docker ps
-   
-   # View container logs
-   docker logs laravel-backend
-   docker logs node-frontend
-   docker logs postgres-db
-   ```
+To start the frontend development server with hot module replacement:
 
-### Development Workflow
+```bash
+make dev
+```
 
-When making changes to your code:
+Or run it directly:
 
-1. Frontend code changes should be automatically detected by the Vite dev server running in the node-frontend container
-2. For Laravel backend changes, they should be immediately reflected as the code is mounted as a volume
-3. If you make changes to package.json or composer.json, you may need to rebuild the containers:
+```bash
+docker-compose -f docker-compose.yaml exec app bash -c 'npm run dev'
+```
 
-   ```bash
-   docker-compose --env-file docker.env down
-   docker-compose --env-file docker.env up --build
-   ```
+By default, npm run dev is started with make run command.
 
 ### Database Management
 
 To connect to the PostgreSQL database directly:
 
 ```bash
-docker exec -it postgres-db psql -U dbUser -d places_db
+docker-compose -f docker-compose.yaml exec db psql -U <Your username> -d <Your db name>
 ```
 
-### Customizing the Setup
 
-If you need to modify the Docker configuration:
-
-- `docker-compose.yml`: Container orchestration
-- `backend.Dockerfile`: Laravel backend container configuration
-- `frontend.Dockerfile`: Node.js frontend container configuration

@@ -2,20 +2,24 @@ version: '3.8'
 
 services:
     # Laravel Backend
-    backend:
+    app:
         build:
-            context: .
-            dockerfile: backend.Dockerfile
-        container_name: laravel-backend
+            context: ./environment/dev/app
+            dockerfile: Dockerfile
+        container_name: app-place-dev
         restart: unless-stopped
         volumes:
             - .:/app
-            - /app/vendor
-            - /app/node_modules
+            - ./environment/dev/app/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./environment/dev/app/php.ini:/usr/local/etc/php/conf.d/zzz-overrides.ini:ro
+            - ./environment/dev/app/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-overrides.conf:ro
+            - ./environment/dev/app/supervisord.conf:/etc/supervisor/custom-supervisord.conf:ro
         ports:
-            - "8000:8000"
+            - "8000:80"
+            - "5173:5173"
         depends_on:
-            - db
+          db:
+            condition: service_healthy
         environment:
             DB_CONNECTION: pgsql
             DB_HOST: db
@@ -25,39 +29,28 @@ services:
             DB_PASSWORD: ${POSTGRES_PASSWORD}
             APP_ENV: local
             DB_DRIVER: pgsql
-        networks:
-            - app-network
-
-
-    # Node.js Frontend
-    frontend:
-        build:
-            context: .
-            dockerfile: frontend.Dockerfile
-        container_name: node-frontend
-        restart: unless-stopped
-        volumes:
-            - .:/app
-            - /app/node_modules
-        ports:
-            - "5173:5173"
+            VITE_ENABLED: 1
         networks:
             - app-network
 
     # PostgreSQL Database
     db:
-        image: postgres:14-alpine
-        container_name: postgres-db
+        image: postgres:16.3-alpine3.18@sha256:64e18e8fb3e9c9aac89ac590c5dd8306b862478404f76cd9b5f7720d012b4c47
+        container_name: postgres-db-app-dev
         restart: unless-stopped
         volumes:
             - postgres-data:/var/lib/postgresql/data
-            - ./init-scripts:/docker-entrypoint-init-db.sql
         ports:
             - "${POSTGRES_PORT}:5432"
         environment:
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        healthcheck:
+                test: [ "CMD-SHELL", "pg_isready -d ${DB_DATABASE} -U ${DB_USERNAME}" ]
+                interval: 3s
+                timeout: 3s
+                retries: 5
         networks:
             - app-network
 
